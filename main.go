@@ -1,40 +1,12 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-)
-
-func getMessage(name string) string {
-	return "Hello, " + name
-}
+import "gopkg.in/libgit2/git2go.v23"
 
 func main() {
-	wg := sync.WaitGroup{}
-	names := []string{
-		"Callum",
-		"Elliot",
-		"Ioannis",
+	repo, err := git.Clone("git://github.com/eidolon/console.git", "console", &git.CloneOptions{})
+	if err != nil {
+		panic(err)
 	}
 
-	messages := make(chan string, len(names))
-
-	wg.Add(len(names))
-
-	for i, _ := range names {
-		name := names[i]
-		go func() {
-			messages <- getMessage(name)
-			wg.Done()
-		}()
-	}
-
-	wg.Wait()
-	close(messages)
-
-	for msg := range messages {
-		fmt.Println(msg)
-	}
-
-	fmt.Println("Done!")
+	println(repo)
 }
